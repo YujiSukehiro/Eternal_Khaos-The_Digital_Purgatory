@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bqsmhemhw4vcu"]
 
-[ext_resource type="PackedScene" path="res://GameFiles/SRC/Arena/Scenes/CombatArena_Lit.tscn" id="1_arena"]
+[ext_resource type="PackedScene" uid="uid://c5xk7ymqvxwht" path="res://GameFiles/SRC/Arena/Scenes/CombatArena_Lit.tscn" id="1_arena"]
 [ext_resource type="PackedScene" uid="uid://bxf5m5so8nmv3" path="res://GameFiles/SRC/Player/Scenes/PlayerWithAnimations.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://c7boss1basic" path="res://GameFiles/SRC/Bosses/Scenes/BasicBoss.tscn" id="3_boss"]
 
