@@ -1,0 +1,58 @@
+[gd_scene load_steps=5 format=3 uid="uid://bqsmhemhw4vcu"]
+
+[ext_resource type="PackedScene" path="res://GameFiles/SRC/Arena/Scenes/CombatArena_Lit.tscn" id="1_arena"]
+[ext_resource type="PackedScene" uid="uid://bxf5m5so8nmv3" path="res://GameFiles/SRC/Player/Scenes/PlayerWithAnimations.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://c7boss1basic" path="res://GameFiles/SRC/Bosses/Scenes/BasicBoss.tscn" id="3_boss"]
+
+[sub_resource type="GDScript" id="GDScript_1"]
+script/source = "extends Node3D
+
+@onready var arena: Node3D = $CombatArena
+@onready var player: CharacterBody3D = $Player
+@onready var boss: CharacterBody3D = $BasicBoss
+
+func _ready() -> void:
+	print(\"Main scene loaded\")
+	print(\"Press ESC to quit\")
+	print(\"Controls: LMB/LB - Light Attack, RMB/RB - Heavy Attack\")
+
+	# Position player at spawn point
+	if arena and player:
+		var spawn_pos = arena.get_player_spawn_position()
+		player.global_position = spawn_pos
+		print(\"Player spawned at: \", spawn_pos)
+
+	# Position boss at spawn point
+	if arena and boss:
+		var boss_spawn_pos = arena.get_boss_spawn_position()
+		boss.global_position = boss_spawn_pos
+		print(\"Boss spawned at: \", boss_spawn_pos)
+
+	# Connect boss signals
+	if boss:
+		boss.BOSS_DIED.connect(_on_boss_died)
+		boss.PHASE_CHANGED.connect(_on_boss_phase_changed)
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"ui_cancel\"):
+		get_tree().quit()
+
+func _on_boss_died() -> void:
+	print(\"VICTORY! Boss defeated!\")
+	# Could trigger victory screen, rewards, etc.
+
+func _on_boss_phase_changed(phase: int) -> void:
+	print(\"Boss entered phase \", phase)
+	# Could trigger arena changes, new mechanics, etc.
+"
+
+[node name="Main" type="Node3D"]
+script = SubResource("GDScript_1")
+
+[node name="CombatArena" parent="." instance=ExtResource("1_arena")]
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 12)
+
+[node name="BasicBoss" parent="." instance=ExtResource("3_boss")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12)

@@ -1,0 +1,397 @@
+[gd_scene load_steps=18 format=3 uid="uid://c5xk7ymqvxwht"]
+
+[ext_resource type="Script" path="res://GameFiles/SRC/Arena/Scripts/ArenaManager.gd" id="1_arena"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.25, 0.25, 0.3, 1)
+metallic = 0.1
+roughness = 0.85
+rim_enabled = true
+rim = 0.2
+rim_tint = 0.1
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+material = SubResource("StandardMaterial3D_floor")
+size = Vector3(40, 1, 40)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(40, 1, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_walls"]
+albedo_color = Color(0.2, 0.2, 0.25, 1)
+metallic = 0.05
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_ew"]
+material = SubResource("StandardMaterial3D_walls")
+size = Vector3(2, 8, 42)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_ew"]
+size = Vector3(2, 8, 42)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_ns"]
+material = SubResource("StandardMaterial3D_walls")
+size = Vector3(42, 8, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_ns"]
+size = Vector3(42, 8, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pillars"]
+albedo_color = Color(0.15, 0.15, 0.2, 1)
+metallic = 0.2
+roughness = 0.6
+rim_enabled = true
+rim = 0.3
+rim_tint = 0.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pillar"]
+material = SubResource("StandardMaterial3D_pillars")
+top_radius = 1.5
+bottom_radius = 1.5
+height = 6.0
+radial_segments = 16
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_pillar"]
+radius = 1.5
+height = 6.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_emissive_strip"]
+albedo_color = Color(0.1, 0.1, 0.15, 1)
+emission_enabled = true
+emission = Color(0.2, 0.3, 0.5, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_emissive"]
+material = SubResource("StandardMaterial3D_emissive_strip")
+size = Vector3(38, 0.1, 0.2)
+
+[sub_resource type="SphereMesh" id="SphereMesh_light"]
+radial_segments = 8
+height_segments = 4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_light_sphere"]
+albedo_color = Color(0, 0, 0, 1)
+emission_enabled = true
+emission = Color(0.8, 0.8, 1, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.4, 0.5, 0.6, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.5, 0.55, 0.65, 1)
+ambient_light_energy = 0.4
+tonemap_mode = 2
+tonemap_exposure = 1.0
+ssao_enabled = true
+ssao_radius = 0.5
+ssao_intensity = 0.5
+ssil_enabled = true
+ssil_radius = 2.0
+ssil_intensity = 0.3
+glow_enabled = true
+glow_intensity = 0.3
+glow_strength = 0.8
+glow_bloom = 0.1
+glow_blend_mode = 1
+fog_enabled = true
+fog_light_color = Color(0.6, 0.65, 0.7, 1)
+fog_density = 0.003
+fog_height = 5.0
+fog_height_density = 0.2
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.002
+volumetric_fog_albedo = Color(0.5, 0.55, 0.6, 1)
+volumetric_fog_emission = Color(0.3, 0.35, 0.4, 1)
+volumetric_fog_emission_energy = 0.1
+
+[node name="CombatArena" type="Node3D"]
+script = ExtResource("1_arena")
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_main")
+
+[node name="Lighting" type="Node3D" parent="Environment"]
+
+[node name="Sun" type="DirectionalLight3D" parent="Environment/Lighting"]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 15, 0)
+light_color = Color(1, 0.95, 0.85, 1)
+light_energy = 1.5
+light_indirect_energy = 0.8
+light_volumetric_fog_energy = 0.4
+shadow_enabled = true
+shadow_bias = 0.03
+shadow_blur = 1.0
+directional_shadow_mode = 0
+directional_shadow_max_distance = 60.0
+
+[node name="DirectionalLight_Rim" type="DirectionalLight3D" parent="Environment/Lighting"]
+transform = Transform3D(-0.707107, 0.5, -0.5, 0, 0.707107, 0.707107, 0.707107, 0.5, -0.5, 0, 12, 0)
+light_color = Color(0.4, 0.5, 0.7, 1)
+light_energy = 0.3
+light_volumetric_fog_energy = 0.1
+shadow_enabled = false
+
+[node name="SpotLight_Player" type="SpotLight3D" parent="Environment/Lighting"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 8, 12)
+light_color = Color(0.8, 0.85, 1, 1)
+light_energy = 1.0
+light_indirect_energy = 0.5
+light_volumetric_fog_energy = 0.5
+shadow_enabled = true
+distance_fade_enabled = true
+distance_fade_begin = 20.0
+distance_fade_length = 10.0
+spot_range = 20.0
+spot_angle = 45.0
+spot_angle_attenuation = 0.8
+
+[node name="SpotLight_Boss" type="SpotLight3D" parent="Environment/Lighting"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 8, -12)
+light_color = Color(1, 0.7, 0.7, 1)
+light_energy = 1.0
+light_indirect_energy = 0.5
+light_volumetric_fog_energy = 0.5
+shadow_enabled = true
+distance_fade_enabled = true
+distance_fade_begin = 20.0
+distance_fade_length = 10.0
+spot_range = 20.0
+spot_angle = 45.0
+spot_angle_attenuation = 0.8
+
+[node name="OmniLights" type="Node3D" parent="Environment/Lighting"]
+
+[node name="OmniLight_Corner1" type="OmniLight3D" parent="Environment/Lighting/OmniLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 4, -18)
+light_color = Color(0.3, 0.4, 0.6, 1)
+light_energy = 0.5
+light_volumetric_fog_energy = 0.3
+shadow_enabled = false
+distance_fade_enabled = true
+distance_fade_begin = 10.0
+distance_fade_length = 10.0
+omni_range = 15.0
+omni_attenuation = 2.0
+
+[node name="OmniLight_Corner2" type="OmniLight3D" parent="Environment/Lighting/OmniLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 4, -18)
+light_color = Color(0.3, 0.4, 0.6, 1)
+light_energy = 0.5
+light_volumetric_fog_energy = 0.3
+shadow_enabled = false
+distance_fade_enabled = true
+distance_fade_begin = 10.0
+distance_fade_length = 10.0
+omni_range = 15.0
+omni_attenuation = 2.0
+
+[node name="OmniLight_Corner3" type="OmniLight3D" parent="Environment/Lighting/OmniLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 4, 18)
+light_color = Color(0.3, 0.4, 0.6, 1)
+light_energy = 0.5
+light_volumetric_fog_energy = 0.3
+shadow_enabled = false
+distance_fade_enabled = true
+distance_fade_begin = 10.0
+distance_fade_length = 10.0
+omni_range = 15.0
+omni_attenuation = 2.0
+
+[node name="OmniLight_Corner4" type="OmniLight3D" parent="Environment/Lighting/OmniLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 4, 18)
+light_color = Color(0.3, 0.4, 0.6, 1)
+light_energy = 0.5
+light_volumetric_fog_energy = 0.3
+shadow_enabled = false
+distance_fade_enabled = true
+distance_fade_begin = 10.0
+distance_fade_length = 10.0
+omni_range = 15.0
+omni_attenuation = 2.0
+
+[node name="PillarLights" type="Node3D" parent="Environment/Lighting"]
+
+[node name="OmniLight_Pillar1" type="OmniLight3D" parent="Environment/Lighting/PillarLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, -10)
+light_color = Color(0.5, 0.6, 0.8, 1)
+light_energy = 0.3
+shadow_enabled = false
+omni_range = 8.0
+omni_attenuation = 2.0
+
+[node name="OmniLight_Pillar2" type="OmniLight3D" parent="Environment/Lighting/PillarLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1, -10)
+light_color = Color(0.5, 0.6, 0.8, 1)
+light_energy = 0.3
+shadow_enabled = false
+omni_range = 8.0
+omni_attenuation = 2.0
+
+[node name="OmniLight_Pillar3" type="OmniLight3D" parent="Environment/Lighting/PillarLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, 10)
+light_color = Color(0.5, 0.6, 0.8, 1)
+light_energy = 0.3
+shadow_enabled = false
+omni_range = 8.0
+omni_attenuation = 2.0
+
+[node name="OmniLight_Pillar4" type="OmniLight3D" parent="Environment/Lighting/PillarLights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1, 10)
+light_color = Color(0.5, 0.6, 0.8, 1)
+light_energy = 0.3
+shadow_enabled = false
+omni_range = 8.0
+omni_attenuation = 2.0
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Floor"]
+mesh = SubResource("BoxMesh_floor")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Walls" type="Node3D" parent="Geometry"]
+
+[node name="WallNorth" type="StaticBody3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -21)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Walls/WallNorth"]
+mesh = SubResource("BoxMesh_wall_ns")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Walls/WallNorth"]
+shape = SubResource("BoxShape3D_wall_ns")
+
+[node name="EmissiveStrip" type="MeshInstance3D" parent="Geometry/Walls/WallNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 1.1)
+mesh = SubResource("BoxMesh_emissive")
+
+[node name="WallSouth" type="StaticBody3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 21)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Walls/WallSouth"]
+mesh = SubResource("BoxMesh_wall_ns")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Walls/WallSouth"]
+shape = SubResource("BoxShape3D_wall_ns")
+
+[node name="EmissiveStrip" type="MeshInstance3D" parent="Geometry/Walls/WallSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, -1.1)
+mesh = SubResource("BoxMesh_emissive")
+
+[node name="WallEast" type="StaticBody3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 3.5, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Walls/WallEast"]
+mesh = SubResource("BoxMesh_wall_ew")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Walls/WallEast"]
+shape = SubResource("BoxShape3D_wall_ew")
+
+[node name="WallWest" type="StaticBody3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 3.5, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Walls/WallWest"]
+mesh = SubResource("BoxMesh_wall_ew")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Walls/WallWest"]
+shape = SubResource("BoxShape3D_wall_ew")
+
+[node name="Pillars" type="Node3D" parent="Geometry"]
+
+[node name="Pillar1" type="StaticBody3D" parent="Geometry/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3, -10)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Pillars/Pillar1"]
+mesh = SubResource("CylinderMesh_pillar")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Pillars/Pillar1"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="LightOrb" type="MeshInstance3D" parent="Geometry/Pillars/Pillar1"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 3.5, 0)
+mesh = SubResource("SphereMesh_light")
+material_override = SubResource("StandardMaterial3D_light_sphere")
+
+[node name="Pillar2" type="StaticBody3D" parent="Geometry/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, -10)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Pillars/Pillar2"]
+mesh = SubResource("CylinderMesh_pillar")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Pillars/Pillar2"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="LightOrb" type="MeshInstance3D" parent="Geometry/Pillars/Pillar2"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 3.5, 0)
+mesh = SubResource("SphereMesh_light")
+material_override = SubResource("StandardMaterial3D_light_sphere")
+
+[node name="Pillar3" type="StaticBody3D" parent="Geometry/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3, 10)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Pillars/Pillar3"]
+mesh = SubResource("CylinderMesh_pillar")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Pillars/Pillar3"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="LightOrb" type="MeshInstance3D" parent="Geometry/Pillars/Pillar3"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 3.5, 0)
+mesh = SubResource("SphereMesh_light")
+material_override = SubResource("StandardMaterial3D_light_sphere")
+
+[node name="Pillar4" type="StaticBody3D" parent="Geometry/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 10)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Pillars/Pillar4"]
+mesh = SubResource("CylinderMesh_pillar")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Pillars/Pillar4"]
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="LightOrb" type="MeshInstance3D" parent="Geometry/Pillars/Pillar4"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 3.5, 0)
+mesh = SubResource("SphereMesh_light")
+material_override = SubResource("StandardMaterial3D_light_sphere")
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="PlayerSpawn" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 12)
+gizmo_extents = 1.0
+
+[node name="BossSpawn" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -12)
+gizmo_extents = 1.0
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+
+[node name="DebugCamera" type="Camera3D" parent="."]
+transform = Transform3D(0.866025, -0.25, 0.433013, 0, 0.866025, 0.5, -0.5, -0.433013, 0.75, 8, 10, 8)
+fov = 60

@@ -1,0 +1,194 @@
+[gd_scene load_steps=14 format=3 uid="uid://dxk8ynmqvxwht"]
+
+[ext_resource type="Script" path="res://GameFiles/SRC/Arena/Scripts/ArenaManager.gd" id="1_arena"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
+albedo_color = Color(0.3, 0.3, 0.35, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_1"]
+material = SubResource("StandardMaterial3D_1")
+size = Vector3(40, 1, 40)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(40, 1, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2"]
+albedo_color = Color(0.25, 0.25, 0.3, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_2"]
+material = SubResource("StandardMaterial3D_2")
+size = Vector3(2, 8, 42)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2"]
+size = Vector3(2, 8, 42)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3"]
+material = SubResource("StandardMaterial3D_2")
+size = Vector3(42, 8, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3"]
+size = Vector3(42, 8, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3"]
+albedo_color = Color(0.2, 0.2, 0.25, 1)
+roughness = 0.7
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1"]
+material = SubResource("StandardMaterial3D_3")
+top_radius = 1.5
+bottom_radius = 1.5
+height = 6.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
+radius = 1.5
+height = 6.0
+
+[sub_resource type="Environment" id="Environment_1"]
+background_mode = 1
+background_color = Color(0.05, 0.05, 0.1, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.3, 0.3, 0.4, 1)
+ambient_light_energy = 0.3
+fog_enabled = true
+fog_light_color = Color(0.08, 0.08, 0.12, 1)
+fog_density = 0.015
+fog_height = 3.0
+fog_height_density = 0.4
+
+[node name="CombatArena" type="Node3D"]
+script = ExtResource("1_arena")
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_1")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 12, 0)
+light_energy = 0.8
+shadow_enabled = true
+shadow_bias = 0.04
+directional_shadow_max_distance = 50.0
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Floor"]
+mesh = SubResource("BoxMesh_1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Floor"]
+shape = SubResource("BoxShape3D_1")
+
+[node name="Walls" type="Node3D" parent="Geometry"]
+
+[node name="WallNorth" type="StaticBody3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -21)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Walls/WallNorth"]
+mesh = SubResource("BoxMesh_3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Walls/WallNorth"]
+shape = SubResource("BoxShape3D_3")
+
+[node name="WallSouth" type="StaticBody3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 21)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Walls/WallSouth"]
+mesh = SubResource("BoxMesh_3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Walls/WallSouth"]
+shape = SubResource("BoxShape3D_3")
+
+[node name="WallEast" type="StaticBody3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21, 3.5, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Walls/WallEast"]
+mesh = SubResource("BoxMesh_2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Walls/WallEast"]
+shape = SubResource("BoxShape3D_2")
+
+[node name="WallWest" type="StaticBody3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 3.5, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Walls/WallWest"]
+mesh = SubResource("BoxMesh_2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Walls/WallWest"]
+shape = SubResource("BoxShape3D_2")
+
+[node name="Pillars" type="Node3D" parent="Geometry"]
+
+[node name="Pillar1" type="StaticBody3D" parent="Geometry/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3, -10)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Pillars/Pillar1"]
+mesh = SubResource("CylinderMesh_1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Pillars/Pillar1"]
+shape = SubResource("CylinderShape3D_1")
+
+[node name="Pillar2" type="StaticBody3D" parent="Geometry/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, -10)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Pillars/Pillar2"]
+mesh = SubResource("CylinderMesh_1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Pillars/Pillar2"]
+shape = SubResource("CylinderShape3D_1")
+
+[node name="Pillar3" type="StaticBody3D" parent="Geometry/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3, 10)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Pillars/Pillar3"]
+mesh = SubResource("CylinderMesh_1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Pillars/Pillar3"]
+shape = SubResource("CylinderShape3D_1")
+
+[node name="Pillar4" type="StaticBody3D" parent="Geometry/Pillars"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 3, 10)
+collision_layer = 1
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Geometry/Pillars/Pillar4"]
+mesh = SubResource("CylinderMesh_1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Geometry/Pillars/Pillar4"]
+shape = SubResource("CylinderShape3D_1")
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="PlayerSpawn" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 12)
+gizmo_extents = 1.0
+
+[node name="BossSpawn" type="Marker3D" parent="SpawnPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -12)
+gizmo_extents = 1.0
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+
+[node name="DebugCamera" type="Camera3D" parent="."]
+transform = Transform3D(0.866025, -0.25, 0.433013, 0, 0.866025, 0.5, -0.5, -0.433013, 0.75, 8, 10, 8)
+fov = 60

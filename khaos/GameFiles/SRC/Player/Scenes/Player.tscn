@@ -1,0 +1,94 @@
+[gd_scene load_steps=10 format=3 uid="uid://b8xk5ymqplayer"]
+
+[ext_resource type="Script" path="res://GameFiles/SRC/Player/Scripts/PlayerController.gd" id="1_player"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_body"]
+albedo_color = Color(0.3, 0.4, 0.5, 1)
+metallic = 0.2
+roughness = 0.8
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_1"]
+material = SubResource("StandardMaterial3D_body")
+radius = 0.4
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_head"]
+albedo_color = Color(0.5, 0.55, 0.6, 1)
+metallic = 0.1
+roughness = 0.7
+
+[sub_resource type="SphereMesh" id="SphereMesh_1"]
+material = SubResource("StandardMaterial3D_head")
+radius = 0.25
+height = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eyes"]
+albedo_color = Color(0.1, 0.1, 0.15, 1)
+emission_enabled = true
+emission = Color(0.2, 0.5, 1, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_eyes"]
+material = SubResource("StandardMaterial3D_eyes")
+size = Vector3(0.08, 0.05, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sword"]
+albedo_color = Color(0.7, 0.7, 0.8, 1)
+metallic = 0.8
+roughness = 0.3
+
+[node name="Player" type="CharacterBody3D" groups=["player"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("CapsuleMesh_1")
+
+[node name="Head" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+mesh = SubResource("SphereMesh_1")
+
+[node name="LeftEye" type="MeshInstance3D" parent="Model/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.05, -0.22)
+mesh = SubResource("BoxMesh_eyes")
+
+[node name="RightEye" type="MeshInstance3D" parent="Model/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.05, -0.22)
+mesh = SubResource("BoxMesh_eyes")
+
+[node name="DirectionIndicator" type="Node3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+
+[node name="Sword" type="MeshInstance3D" parent="Model/DirectionIndicator"]
+transform = Transform3D(0.1, 0, 0, 0, 0.8, 0, 0, 0, 0.05, 0, 0, -0.7)
+mesh = SubResource("CapsuleMesh_1")
+material_override = SubResource("StandardMaterial3D_sword")
+
+[node name="CameraMount" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraMount"]
+spring_length = 8.0
+margin = 0.2
+
+[node name="Camera3D" type="Camera3D" parent="CameraMount/SpringArm3D"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 2, 6)
+fov = 60
+
+[node name="StateDebugLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+text = "IDLE"
+font_size = 32
+billboard = 1
