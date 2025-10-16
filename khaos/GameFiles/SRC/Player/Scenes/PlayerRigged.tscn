@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://c05bb8ujr8apa"]
+
+[ext_resource type="PackedScene" uid="uid://4let7iclfdf8" path="res://GameFiles/BlenderScripts/Blender Models/BakedPlayer.glb" id="1_yv0k7"]
+
+[node name="BakedPlayer" instance=ExtResource("1_yv0k7")]

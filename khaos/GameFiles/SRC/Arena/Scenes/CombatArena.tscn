@@ -1,7 +1,7 @@
 [gd_scene load_steps=15 format=3 uid="uid://dxk8ynmqvxwht"]
 
 [ext_resource type="Script" uid="uid://xshum0153s" path="res://GameFiles/SRC/Arena/Scripts/ArenaManager.gd" id="1_arena"]
-[ext_resource type="PackedScene" uid="uid://btl3m6j6rwvh2" path="res://GameFiles/BlenderScripts/Untitled.glb" id="2_jyoh6"]
+[ext_resource type="PackedScene" uid="uid://4let7iclfdf8" path="res://GameFiles/BlenderScripts/Blender Models/BakedPlayer.glb" id="2_jyoh6"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -186,4 +186,4 @@ transform = Transform3D(0.866025, -0.25, 0.433013, 0, 0.866025, 0.5, -0.5, -0.43
 fov = 60.0
 
 [node name="Untitled" parent="." instance=ExtResource("2_jyoh6")]
-transform = Transform3D(-0.540255, 0, -0.84150136, 0, 1, 0, 0.84150136, 0, -0.540255, 0.58853126, 0.03999996, 1.0772991)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8960672, 0.0026554058, 0.9020288)

@@ -21,7 +21,7 @@ extends CharacterBody3D
 @export var camera_sensitivity: float = 0.3
 @export var camera_vertical_min: float = -60.0
 @export var camera_vertical_max: float = 60.0
-@export var camera_distance: float = 8.0
+@export var camera_distance: float = 1.2  # Close camera like First Berserker
 @export var camera_height: float = 2.0
 @export var camera_side_offset: float = 0.5
 
@@ -86,13 +86,13 @@ var attack_buffer: String = ""
 var is_invulnerable: bool = false
 
 # Components
-@onready var model: Node3D = $Model
+@onready var model: Node3D = $BakedPlayer/FullModel/Skeleton3D  # Rigged character skeleton
 @onready var camera_mount: Node3D = $CameraMount
 @onready var spring_arm: SpringArm3D = $CameraMount/SpringArm3D
 @onready var camera: Camera3D = $CameraMount/SpringArm3D/Camera3D
-@onready var state_label: Label3D = $StateDebugLabel
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var attack_hitbox: Area3D = $Model/WeaponPivot/Sword/AttackHitbox if has_node("Model/WeaponPivot/Sword/AttackHitbox") else null
+@onready var state_label: Label3D = null  # Optional - add StateDebugLabel if you want debug info
+@onready var animation_player: AnimationPlayer = $BakedPlayer/AnimationPlayer  # Correct path from copied node path
+@onready var attack_hitbox: Area3D = null  # Will add weapon/hitbox later
 
 # Physics
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -335,11 +335,12 @@ func _update_camera(delta: float) -> void:
 	if spring_arm:
 		spring_arm.rotation.x = camera_rotation_x
 
-	# Handle gamepad camera input
+	# Handle gamepad camera input (with much higher sensitivity multiplier)
 	var camera_input = InputManager.get_camera_vector()
 	if camera_input.length() > 0.1:
-		camera_rotation_y -= camera_input.x * camera_sensitivity * delta
-		camera_rotation_x -= camera_input.y * camera_sensitivity * delta
+		# Multiply by 10 for gamepad - gamepad needs higher sensitivity than mouse
+		camera_rotation_y -= camera_input.x * camera_sensitivity * delta * 10.0
+		camera_rotation_x -= camera_input.y * camera_sensitivity * delta * 10.0
 		camera_rotation_x = clamp(camera_rotation_x, deg_to_rad(camera_vertical_min), deg_to_rad(camera_vertical_max))
 
 func _get_movement_direction() -> Vector3:
@@ -359,7 +360,8 @@ func _get_movement_direction() -> Vector3:
 
 func _rotate_to_movement(direction: Vector3, delta: float) -> void:
 	if model and direction.length() > 0:
-		var target_rotation = atan2(direction.x, direction.z)
+		# Add PI (180 degrees) to flip character forward
+		var target_rotation = atan2(direction.x, direction.z) + PI
 		model.rotation.y = lerp_angle(model.rotation.y, target_rotation, rotation_speed * delta)
 
 func _apply_air_movement(delta: float) -> void:
@@ -377,6 +379,7 @@ func _start_dodge() -> void:
 		direction = last_movement_direction
 
 	if direction.length() < 0.1:
+		# Get forward direction from model (accounting for 180° rotation)
 		direction = -model.transform.basis.z if model else -transform.basis.z
 
 	dodge_direction = direction.normalized()
@@ -412,7 +415,13 @@ func _start_heavy_attack() -> void:
 	_change_state(PlayerState.HEAVY_ATTACK)
 
 	# Play heavy attack animation
-	if animation_player and animation_player.has_animation("heavy_attack"):
+	if animation_player and animation_player.has_animation("Swing_heavy"):
+		animation_player.play("Swing_heavy")
+		# Wait for animation to finish
+		await animation_player.animation_finished
+		if current_state == PlayerState.HEAVY_ATTACK:
+			_change_state(PlayerState.IDLE)
+	elif animation_player and animation_player.has_animation("heavy_attack"):
 		animation_player.play("heavy_attack")
 		# Wait for animation to finish
 		await animation_player.animation_finished
@@ -458,6 +467,50 @@ func _change_state(new_state: PlayerState) -> void:
 
 func _on_state_changed(new_state: PlayerState, old_state: PlayerState) -> void:
 	print("State: ", PlayerState.keys()[old_state], " -> ", PlayerState.keys()[new_state])
+
+	# Play animations based on state
+	if animation_player:
+		match new_state:
+			PlayerState.IDLE:
+				if animation_player.has_animation("Stand"):
+					animation_player.play("Stand")
+				elif animation_player.has_animation("Idle"):
+					animation_player.play("Idle")
+				elif animation_player.has_animation("idle"):
+					animation_player.play("idle")
+				else:
+					animation_player.stop()
+			PlayerState.MOVING:
+				if animation_player.has_animation("Walk"):
+					animation_player.play("Walk")
+				elif animation_player.has_animation("walk"):
+					animation_player.play("walk")
+			PlayerState.SPRINTING:
+				if animation_player.has_animation("Run"):
+					animation_player.play("Run")
+				elif animation_player.has_animation("run"):
+					animation_player.play("run")
+				elif animation_player.has_animation("Walk"):
+					# Use Walk animation but speed it up
+					animation_player.play("Walk")
+					animation_player.speed_scale = 1.5
+				elif animation_player.has_animation("walk"):
+					# Use walk animation but speed it up
+					animation_player.play("walk")
+					animation_player.speed_scale = 1.5
+			PlayerState.JUMPING:
+				if animation_player.has_animation("jump"):
+					animation_player.play("jump")
+			PlayerState.FALLING:
+				if animation_player.has_animation("fall"):
+					animation_player.play("fall")
+			PlayerState.DODGING:
+				if animation_player.has_animation("dodge"):
+					animation_player.play("dodge")
+
+		# Reset speed scale when not sprinting
+		if new_state != PlayerState.SPRINTING:
+			animation_player.speed_scale = 1.0
 
 # Public methods
 func take_damage(amount: float) -> void:
