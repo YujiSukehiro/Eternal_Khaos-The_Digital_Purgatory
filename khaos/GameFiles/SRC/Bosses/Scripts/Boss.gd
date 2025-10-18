@@ -236,7 +236,6 @@ func _on_hitbox_area_entered(area: Area3D) -> void:
 		# Light attack does 20 damage, heavy does 40
 		var damage = 20.0
 		var poise_damage = 15.0
-
 		# Check if it's a heavy attack based on parent node or stored data
 		if area.has_meta("is_heavy_attack"):
 			damage = 40.0
@@ -244,6 +243,6 @@ func _on_hitbox_area_entered(area: Area3D) -> void:
 
 		take_damage(damage, poise_damage)
 
-func _on_hitbox_body_entered(body: Node3D) -> void:
+func _on_hitbox_body_entered(_body: Node3D) -> void:
 	# Additional check for body collisions if needed
 	pass
